@@ -1,12 +1,12 @@
 # Spy_Eye_ESP32
 
 ESP32-CAM, socket.io, node.js
-2022.08.
+2024.12.30
 This project based on
 
 ESP32-CAM fastest way to stream video output to nodejs server with socketIO
-Inglebard/esp32cam-relay
-timum-viw/socket.io-client
+esp32cam-relay
+socket.io-client
 Main goal
 Create simple Survillance system with multiple ESP32-CAM modules. Some other great projects, like Easytarget Camera Webserver are very usefull, but I neede some extra functionality like:
 
