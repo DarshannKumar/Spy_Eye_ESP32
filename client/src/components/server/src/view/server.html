@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socket</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.js"
+    integrity="sha512-/xb5+PNOA079FJkngKI2jvID5lyiqdHXaUUcfmzE0X0BdpkgzIWHC59LOG90a2jDcOyRsd1luOr24UCCAG8NNw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <style type="text/css">
+    * {
+      box-sizing: border-box;
+    }
+
+    .camera_container--frame {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-content: flex-start;
+      align-items: stretch;
+      row-gap: 10px;
+      column-gap: 10px;
+    }
+
+    .camera_container--image_container {
+      /* width: 50vw !important; */
+      /* height: 100% !important; */
+      /* border: 2px solid red; */
+      flex-grow: 1;
+      /* box-shadow: black 0 0 10px 2px; */
+      justify-content: center;
+      /* margin: auto; */
+    }
+
+    .camera_container--image_container h3 {
+      padding: 0;
+      margin: 0.5rem;
+    }
+
+    .camera_container--image_container img {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    @media only screen and (max-width: 600px) {
+      .camera_container--frame {
+        /* On small screens, we are no longer using row direction but column */
+        flex-direction: column;
+      }
+
+      .camera_container--image_container {
+        width: 100% !important;
+        /* margin: auto; */
+      }
+    }
+
+    /* Small devices (portrait tablets and large phones, 600px and up) */
+    @media only screen and (min-width: 600px) {
+      .camera_container--frame {
+        /* On small screens, we are no longer using row direction but column */
+        flex-direction: column;
+      }
+
+      .camera_container--image_container {
+        width: 100% !important;
+        /* margin: auto; */
+      }
+    }
+
+    /* Medium devices (landscape tablets, 768px and up) */
+    @media only screen and (min-width: 768px) {
+      .camera_container--frame {
+        /* On small screens, we are no longer using row direction but column */
+        flex-direction: column;
+      }
+
+      .camera_container--image_container {
+        width: 100% !important;
+        /* margin: auto; */
+      }
+    }
+
+    /* Large devices (laptops/desktops, 992px and up) */
+    @media only screen and (min-width: 992px) {
+      .camera_container--image_container {
+        width: 40% !important;
+        /* margin: auto; */
+      }
+    }
+
+    /* Extra large devices (large laptops and desktops, 1200px and up) */
+    @media only screen and (min-width: 1200px) {
+      .camera_container--frame {
+        /* On small screens, we are no longer using row direction but column */
+        flex-direction: row;
+      }
+
+      .camera_container--image_container {
+        width: 40% !important;
+        /* margin: auto; */
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- <h1>Hello from server</h1> -->
+  <div class="camera_container--frame">
+    <div class="camera_container--image_container">
+      <h3></h3>
+      <img id="ESP32CAM-144" src="" alt="" />
+    </div>
+    <div class="camera_container--image_container">
+      <h3></h3>
+      <img id="ESP32CAM-142" src="" alt="" />
+    </div>
+  </div>
+  <script type="text/javascript" src="config.js"></script>
+  <script>
+    // const img = document.getElementById("ESP32CAM-144");
+    const imageElements = document.getElementsByClassName("camera_container--frame")[0].getElementsByTagName("img")
+    //console.log('imageElements', imageElements)
+
+    let urlObject;
+
+    const socket = io();
+    socket.on(SERVER_CAMERALIST, (data) => {
+      console.log('SERVER_CAMERALIST', data)
+    })
+
+    socket.on(CLIENT_EVENTNAME, (data) => {
+      //console.log('jpgstream_clientio message', data.message)
+      // console.log('jpgstream_clientio ip', data.ip.split('.')[3])
+      // return
+      const message = data.message
+      //console.log('CLIENT_EVENTNAME message.hostname', message.hostname)
+      var blob = new Blob([message.picture], { type: "image/jpeg" });
+      const arrayBuffer = message.picture
+      if (urlObject) {
+        URL.revokeObjectURL(urlObject)
+      }
+      urlObject = URL.createObjectURL(blob) //new Blob([arrayBuffer]))
+      //img.src = urlObject
+      imageElements[message.hostname].src = urlObject
+      imageElements[message.hostname].previousElementSibling.innerHTML = typeof message.location === 'undefined' ? message.hostname : message.location
+
+    })
+    // socket.on("clientList", (...args) => {
+    //   console.log('clientList args', args)
+    // });
+    // // send a message to the server
+    // socket.emit("hello from client", 5, "6", { 7: Uint8Array.from([8]) });
+
+    // // receive a message from the server
+    // socket.on("hello from server", (...args) => {
+    //   console.log('args', args)
+    // });
+
+
+  </script>
+
+</body>
+
+</html>
